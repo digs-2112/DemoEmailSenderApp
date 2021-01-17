@@ -6,6 +6,7 @@ Solution Name: DemoEmailSender
 1) Please use this GitHub link to Clone the repository
 	https://github.com/digs-2112/DemoEmailSenderApp.git
 2) After cloning the repository, please set your gmail account username and password in web.config:
+```
 	<system.net>
     <mailSettings>
       <smtp from="YourEmail@gmail.com">
@@ -17,6 +18,7 @@ Solution Name: DemoEmailSender
       </smtp>
     </mailSettings>
   </system.net>
+  ```
 3) I have created "MediaFiles" folder in the root of solution which contains few test files of csv, excel and pdf. You can add files if you wish.
 4) For build and run application use F5
 5) I didn't created Unit test project for this solution, so testing is solely depends upon reviewers discretion.
