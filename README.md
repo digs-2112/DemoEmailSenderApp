@@ -5,7 +5,7 @@ C# - Excercise Description
 Solution Name: DemoEmailSender
 1) Please use this GitHub link to Clone the repository
 	https://github.com/digs-2112/DemoEmailSenderApp.git
-2) After cloning the repository, please set your gmail account username and password in web.config:
+2) After cloning the repository, please set your gmail account username and password in web.config and set Allow less secure apps = ON in google account security :
 ```
 	<system.net>
     <mailSettings>
