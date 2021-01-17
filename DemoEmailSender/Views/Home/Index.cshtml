@@ -2,30 +2,178 @@
     ViewBag.Title = "Home Page";
 }
 
-<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
-</div>
+<style>
+    #emailSenderModal .modal-body .row {
+        margin-top: 10px;
+    }
+
+    #txtEmailContent {
+        height: 100px;
+    }
+
+    #emailSenderModalLabel {
+        display: inline-block;
+    }
+</style>
 
 <div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
-        </p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
+    <div class="col-md-12 table-responsive" style="margin-top: 30px;">
+        <form>
+            <!-- Single button -->
+            <div class="btn-group pull-right" style="margin-bottom: 10px">
+                <button type="button" class="btn btn-primary dropdown-toggle pull-right" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Share <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a href="#" data-toggle="modal" data-target="#emailSenderModal">Email</a></li>
+                </ul>
+            </div>
+            <table id="EmailSender" class="display" style="width: 100%; ">
+                <thead>
+                    <tr>
+                        <th>File Name</th>
+                        <th>Creation Date</th>
+                    </tr>
+                </thead>
+            </table>
+        </form>
     </div>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="emailSenderModal" tabindex="-1" role="dialog" aria-labelledby="emailSenderModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title text-center" style="width: 90%" id="emailSenderModalLabel">Send Email</h4>
+                <button type="button" id="btnClose" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row" style="margin-top: 0">
+                    <div class="col-md-12">
+                        <span id="lblError" class="text-danger"></span>
+                        <h4 style="margin-top: 0"><b>Choose Files</b></h4>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <input type="checkbox" id="chkAll" name="chkAll" />
+                            <label>Select All</label>
+                        </div>
+                        <div class="col-md-12">
+                            <input type="checkbox" id="chkCSV" name="chkCSV" />
+                            <label>CSV</label>
+                        </div>
+                        <div class="col-md-12">
+                            <input type="checkbox" id="chkXLS" name="chkXLS" />
+                            <label>Excel</label>
+                        </div>
+                        <div class="col-md-12">
+                            <input type="checkbox" id="chkPDF" name="chkPDF" />
+                            <label>PDF</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" id="txtEmailTo" name="txtEmailTo" placeholder="Email" />
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" id="txtEmailSubject" name="txtEmailSubject" placeholder="Subject" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" id="txtEmailCC" name="txtEmailCC" placeholder="CC" />
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" id="txtEmailBCC" name="txtEmailBCC" placeholder="BCC" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        @*<input type="text" id="txtEmailContent" name="txtEmailContent" placeholder="Email content"/>*@
+                        <textarea id="txtEmailContent" class="form-control" name="txtEmailContent" placeholder="Email content"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnSendEmail" onclick="sendEmail();">Send</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts
+{
+    <script>
+        $(document).ready(function() {
+
+            $.ajax({
+                url: '@Url.Action("GetFileList")',
+                type: 'POST',
+                success: function (response) {
+                    $("#EmailSender").DataTable(
+                        {
+                            data: response,
+                            columns: [{ 'data': 'FileName' },
+                                { 'data': 'Date' }]
+                        });
+                },
+                error: function() {
+
+                }
+            });
+        });
+
+        function sendEmail() {
+
+            var dataToSend = {
+                To : $("#txtEmailTo").val(),
+                CC: $("#txtEmailCC").val(),
+                BCC : $("#txtEmailBCC").val(),
+                Subject: $("#txtEmailSubject").val(),
+                EmailContent: $("#txtEmailContent").val(),
+                
+                IsCSV: $("#chkCSV").is(":checked"),
+                IsXLS: $("#chkXLS").is(":checked"),
+                IsPDF: $("#chkPDF").is(":checked")
+
+            };
+
+            $("#btnSendEmail").attr("disabled", "disabled");
+
+            $.ajax({
+                url: '@Url.Action("SendEmail")',
+                type: 'POST',
+                data: dataToSend,
+                success: function (response) {
+                    if (response.IsValid) {
+                        //hide model
+                        $("#lblError").html('');
+                        $("#btnClose").click();
+                        alert("Email sent successfully");
+                    } else {
+                        //show error message
+                        $("#lblError").html(response.Message);
+                    }
+                    $("#btnSendEmail").removeAttr("disabled");
+                },
+                error: function() {
+                    $("#btnSendEmail").removeAttr("disabled");
+                }
+            });
+        }
+
+        $("#chkAll").click(function() {
+            var selAll = $("#chkAll").is(":checked");
+            $("#emailSenderModal input[type=checkbox]").prop("checked", selAll);
+        });
+
+    </script>
+
+}
