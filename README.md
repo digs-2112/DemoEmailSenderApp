@@ -31,6 +31,7 @@ Solution Name: DemoEmailSender
    c) Multple email addresses can be inputted in To, CC or BCC with comma, semi-colon or white space and they are validated with email regex.
 10) Once email is sent successfully, alert is shown in the browser.
 11) Validation error message can be seen inside Bootstrap popup.
+12) In case if you are using Gmail account email address as a "From" email address, please put "Less secure app access" ON under settings in your Gmail account.  
 
 
 
